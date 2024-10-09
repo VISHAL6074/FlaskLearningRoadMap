@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learn Flask - Roadmap</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        h1, h2, h3 {
+            color: #333;
+        }
+        code {
+            background: #e7e7e7;
+            padding: 5px;
+            border-radius: 3px;
+        }
+        pre {
+            background: #e7e7e7;
+            padding: 10px;
+            border-radius: 3px;
+            overflow: auto;
+        }
+        section {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .example {
+            background-color: #d9edf7;
+            padding: 10px;
+            border: 1px solid #bce8f1;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+        a {
+            color: #007BFF;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Learn Flask: A Comprehensive Roadmap</h1>
+
+<section>
+    <h2>1. Setting Up the Flask Environment</h2>
+    <p>Install Flask and set up a virtual environment:</p>
+    <pre><code>pip install Flask
+python -m venv venv
+source venv/bin/activate  # On Windows use venv\Scripts\activate</code></pre>
+    <p>Create a simple Flask app:</p>
+    <pre><code>from flask import Flask
+
+app = Flask(__name__)
+
+@app.route('/')
+def hello_world():
+    return 'Hello, World!'
+
+if __name__ == '__main__':
+    app.run(debug=True)</code></pre>
+    <p>Run the app:</p>
+    <pre><code>python app.py</code></pre>
+</section>
+
+<section>
+    <h2>2. Flask Routing and URL Building</h2>
+    <p>Add basic routes:</p>
+    <pre><code>@app.route('/')
+def home():
+    return 'This is the homepage!'
+
+@app.route('/about')
+def about():
+    return 'This is the about page.'
+
+@app.route('/user/&lt;username&gt;')
+def show_user_profile(username):
+    return f'Hello, {username}!'</code></pre>
+</section>
+
+<section>
+    <h2>3. Jinja2 Templates – Dynamic HTML Rendering</h2>
+    <p>Create a template in <code>templates/index.html</code>:</p>
+    <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;title&gt;{{ title }}&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1&gt;Welcome to {{ name }}'s page!&lt;/h1&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+    <p>Update the app to render the template:</p>
+    <pre><code>@app.route('/profile/&lt;name&gt;')
+def profile(name):
+    return render_template('index.html', name=name, title='Profile Page')</code></pre>
+</section>
+
+<section>
+    <h2>4. Handling Forms and User Input</h2>
+    <p>Create a form in <code>templates/form.html</code>:</p>
+    <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;title&gt;Form Example&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1&gt;Submit Your Name&lt;/h1&gt;
+    &lt;form method="POST"&gt;
+        &lt;label for="name"&gt;Name:&lt;/label&gt;
+        &lt;input type="text" id="name" name="name"&gt;
+        &lt;input type="submit" value="Submit"&gt;
+    &lt;/form&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+    <p>Handle the form submission:</p>
+    <pre><code>@app.route('/submit', methods=['GET', 'POST'])
+def submit():
+    if request.method == 'POST':
+        name = request.form['name']
+        return f'Thank you, {name}!'
+    return render_template('form.html')</code></pre>
+</section>
+
+<section>
+    <h2>5. Using Flask-WTF for Form Handling</h2>
+    <p>Install Flask-WTF:</p>
+    <pre><code>pip install Flask-WTF</code></pre>
+    <p>Create a form class in <code>forms.py</code>:</p>
+    <pre><code>from flask_wtf import FlaskForm
+from wtforms import StringField, SubmitField
+from wtforms.validators import DataRequired
+
+class NameForm(FlaskForm):
+    name = StringField('Name', validators=[DataRequired()])
+    submit = SubmitField('Submit')</code></pre>
+    <p>Use the form in your app:</p>
+    <pre><code>@app.route('/submit_wtf', methods=['GET', 'POST'])
+def submit_wtf():
+    form = NameForm()
+    if form.validate_on_submit():
+        name = form.name.data
+        return f'Thank you, {name}!'
+    return render_template('form.html', form=form)</code></pre>
+</section>
+
+<section>
+    <h2>6. Database Integration with SQLAlchemy</h2>
+    <p>Install SQLAlchemy and Flask-Migrate:</p>
+    <pre><code>pip install Flask-SQLAlchemy Flask-Migrate</code></pre>
+    <p>Configure the database:</p>
+    <pre><code>app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
+db = SQLAlchemy(app)</code></pre>
+    <p>Create a user model:</p>
+    <pre><code>class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(20), unique=True, nullable=False)
+    email = db.Column(db.String(120), unique=True, nullable=False)</code></pre>
+</section>
+
+<section>
+    <h2>7. User Authentication with Flask-Login</h2>
+    <p>Install Flask-Login:</p>
+    <pre><code>pip install Flask-Login</code></pre>
+    <p>Add user loader and login routes:</p>
+    <pre><code>from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required
+
+login_manager = LoginManager(app)
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
+
+@app.route('/login')
+def login():
+    user = User.query.first()
+    login_user(user)
+    return 'Logged in!'</code></pre>
+</section>
+
+<section>
+    <h2>8. Building REST APIs with Flask</h2>
+    <p>Install Flask-RESTful:</p>
+    <pre><code>pip install Flask-RESTful</code></pre>
+    <p>Add API routes:</p>
+    <pre><code>from flask_restful import Api, Resource
+
+api = Api(app)
+
+class HelloWorld(Resource):
+    def get(self):
+        return {'message': 'Hello, World!'}
+
+api.add_resource(HelloWorld, '/api/hello')</code></pre>
+</section>
+
+<section>
+    <h2>9. Deploying Flask to Heroku</h2>
+    <p>Install gunicorn:</p>
+    <pre><code>pip install gunicorn</code></pre>
+    <p>Create a <code>Procfile</code>:</p>
+    <pre><code>web: gunicorn app:app</code></pre>
+    <p>Deploy to Heroku:</p>
+    <pre><code>heroku create
+git push heroku master</code></pre>
+</section>
+
+<section>
+    <h2>10. Writing Tests</h2>
+    <p>Basic test example:</p>
+    <pre><code>def test_home_page(client):
+        response = client.get('/')
+        assert response.status_code == 200
+        assert b'Hello, World!' in response.data</code></pre>
+    <p>Run tests using <code>pytest</code>.</p>
+</section>
+
+</body>
+</html>
